@@ -6,9 +6,18 @@
 
 <!-- Форма добавления -->
 <form method="POST" action="/animals/add" class="mb-3">
+
     <input type="text" name="name" placeholder="Имя" required>
-    <input type="number" name="age" placeholder="Возраст" required>
-    <button type="submit" class="btn btn-primary">Добавить</button>
+
+    <input type="date" name="birth_date" required>
+
+    <select name="species_id" required>
+        {% for s in species %}
+            <option value="{{ s[0] }}">{{ s[1] }}</option>
+        {% endfor %}
+    </select>
+
+    <button class="btn btn-primary">Добавить</button>
 </form>
 
 <!-- Таблица -->
@@ -17,25 +26,32 @@
         <tr>
             <th>ID</th>
             <th>Имя</th>
+            <th>Дата рождения</th>
             <th>Возраст</th>
-            <th>Действия</th>
+            <th>Действие</th>
         </tr>
     </thead>
 
     <tbody>
-        {% for animal in animals %}
-        <tr>
-            <td>{{ animal[0] }}</td>
-            <td>{{ animal[1] }}</td>
-            <td>{{ animal[2] }}</td>
-            <td>
-                <a href="/animals/delete/{{ animal[0] }}" class="btn btn-danger btn-sm">
-                    Удалить
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+{% for animal in animals %}
+<tr>
+    <td>{{ animal.id }}</td>
+    <td>{{ animal.name }}</td>
+    <td>{{ animal.birth_date }}</td>
+    <td>{{ animal.age }} лет</td>
+
+    <td>
+        <a href="/animals/edit/{{ animal.id }}" class="btn btn-warning btn-sm">
+            Редактировать
+        </a>
+
+        <a href="/animals/delete/{{ animal.id }}" class="btn btn-danger btn-sm">
+            Удалить
+        </a>
+    </td>
+</tr>
+{% endfor %}
+</tbody>
 </table>
 
 {% endblock %}

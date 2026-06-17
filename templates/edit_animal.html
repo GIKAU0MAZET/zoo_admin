@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Редактирование животного</h2>
+
+<form method="POST" action="/animals/update/{{ animal[0] }}">
+    <input type="text" name="name" value="{{ animal[1] }}" required>
+    <input type="number" name="age" value="{{ animal[2] }}" required>
+
+    <button type="submit" class="btn btn-success">
+        Сохранить
+    </button>
+</form>
+
+{% endblock %}
