@@ -6,16 +6,17 @@ def get_user_by_login(login):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT
-            п.пользователь_id,
-            п.логин,
-            п.пароль_hash,
-            с.сотрудник_id
-        FROM пользователи п
-        JOIN сотрудники с
-            ON п.сотрудник_id = с.сотрудник_id
-        WHERE п.логин = %s
-    """, (login,))
+    SELECT
+        п.пользователь_id,
+        п.логин,
+        п.пароль_hash,
+        с.сотрудник_id,
+        с.должность
+    FROM пользователи п
+    JOIN сотрудники с
+        ON п.сотрудник_id = с.сотрудник_id
+    WHERE п.логин = %s
+""", (login,))
 
     user = cur.fetchone()
 

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Продажа билетов</h2>
+</div>
+
+<div class="card mb-4" style="max-width: 480px;">
+    <div class="card-header bg-dark text-white">
+        Новый билет
+    </div>
+    <div class="card-body">
+        <form action="/tickets/add" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Тип билета</label>
+                <select name="ticket_type" id="ticket_type" class="form-select" required onchange="updatePrice()">
+                    <option value="">— выберите —</option>
+                    <option value="Взрослый">Взрослый — 500 ₽</option>
+                    <option value="Детский">Детский — 300 ₽</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Количество</label>
+                <input type="number" name="quantity" id="quantity"
+                       class="form-control" min="1" value="1" required
+                       oninput="updatePrice()">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Итого</label>
+                <input type="text" id="total" class="form-control" readonly
+                       value="— ₽" style="background:#f8f9fa; font-weight:600;">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Продать билет
+            </button>
+        </form>
+    </div>
+</div>
+
+<h5 class="mb-3">История продаж</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Тип</th>
+            <th>Цена</th>
+            <th>Кол-во</th>
+            <th>Сумма</th>
+            <th>Кассир</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in tickets %}
+        <tr>
+            <td>{{ t[0] }}</td>
+            <td>{{ t[1].strftime('%d.%m.%Y') }}</td>
+            <td>{{ t[2] }}</td>
+            <td>{{ t[3] }} ₽</td>
+            <td>{{ t[4] }}</td>
+            <td>{{ t[5] }} ₽</td>
+            <td>{{ t[6] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+const prices = { "Взрослый": 500, "Детский": 300 };
+
+function updatePrice() {
+    const type = document.getElementById("ticket_type").value;
+    const qty  = parseInt(document.getElementById("quantity").value) || 0;
+    const price = prices[type] || 0;
+    document.getElementById("total").value = price && qty
+        ? (price * qty).toLocaleString("ru-RU") + " ₽"
+        : "— ₽";
+}
+</script>
+
+{% endblock %}

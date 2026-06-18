@@ -16,21 +16,30 @@
 
     <div class="sidebar">
 
-        <h3 class="text-center mt-3">
-            🦁 Zoo Admin
-        </h3>
+    <h3 class="text-center mt-3">
+        🦁 {{ zoo_name }}
+    </h3>
 
-        <hr>
+    <hr>
+
+    {% if session.get('role') == 'Кассир' %}
+
+        <a href="/tickets">Продажа билетов</a>
+
+    {% else %}
 
         <a href="/">Главная</a>
         <a href="/animals">Животные</a>
         <a href="/species">Виды</a>
         <a href="/cages">Вольеры</a>
         <a href="/purchase-requests">Заявки на закупку</a>
-        <a href="#">Закупки на лечение</a>
-        <a href="/logout">🚪 Выйти</a>
+        <a href="#">Заявки на лечение</a>
 
-    </div>
+    {% endif %}
+
+    <a href="/logout">🚪 Выйти</a>
+
+</div>
 
     <div class="content">
 

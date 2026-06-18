@@ -14,12 +14,22 @@ from service.employees_service import list_employees
 from service.auth_service import authenticate
 from service.purchase_requests_service import list_purchase_requests, get_purchase_request, create_purchase_request, edit_purchase_request
 from service.purchase_request_items_service import list_request_items, create_request_item, edit_request_item
+from service.tickets_service import list_tickets, create_ticket
 
 from database import get_connection
 
 
 app = Flask(__name__)
 app.secret_key = "zoo_secret_key_2026"
+
+@app.context_processor
+def inject_zoo_name():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""SELECT "Название зоопарка" FROM "Зоопарк" LIMIT 1""")
+    row = cur.fetchone()
+    conn.close()
+    return {"zoo_name": row[0] if row else "Зоопарк"}
 
 @app.route("/")
 def dashboard():
@@ -46,7 +56,6 @@ def login():
 
     user = authenticate(login, password)
 
-    print(user)
     if not user:
         return render_template(
             "login.html",
@@ -55,8 +64,13 @@ def login():
 
     session["user_id"] = user[0]
     session["employee_id"] = user[3]
+    session["role"] = user[4]        # ← добавить
 
-    return redirect(url_for("dashboard"))
+    role = user[4]                   # ← добавить редирект по роли
+    if role == "Кассир":
+        return redirect(url_for("tickets"))
+    else:
+        return redirect(url_for("dashboard"))
 
 #Выход
 @app.route("/logout")
@@ -301,6 +315,33 @@ def get_feed_by_supplier(supplier_id):
         })
 
     return jsonify(result)
+
+
+#Кассир
+@app.route("/tickets")
+def tickets():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Кассир":   # ← добавить
+        return redirect(url_for("dashboard"))
+
+    data = list_tickets()
+    return render_template("tickets.html", tickets=data)
+ 
+ 
+@app.route("/tickets/add", methods=["POST"])
+def add_ticket_route():
+    if "user_id" not in session:
+        return redirect("/login")
+ 
+    ticket_type = request.form.get("ticket_type")
+    quantity    = int(request.form.get("quantity", 1))
+    employee_id = session.get("employee_id")
+    zoo_id      = 1  
+ 
+    create_ticket(ticket_type, quantity, employee_id, zoo_id)
+ 
+    return redirect("/tickets")
 
 if __name__ == "__main__":
     app.run(debug=True)

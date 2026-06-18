@@ -9,7 +9,7 @@ def authenticate(login, password):
     if not user:
         return None
 
-    stored_hash = user[2]
+    stored_hash = user[2].strip()
 
     if bcrypt.checkpw(
             password.encode(),
