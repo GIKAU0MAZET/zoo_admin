@@ -15,6 +15,7 @@ from service.auth_service import authenticate
 from service.purchase_requests_service import list_purchase_requests, get_purchase_request, create_purchase_request, edit_purchase_request
 from service.purchase_request_items_service import list_request_items, create_request_item, edit_request_item
 from service.tickets_service import list_tickets, create_ticket
+from service.feeding_service import list_feedings, create_feeding
 
 from database import get_connection
 
@@ -66,9 +67,11 @@ def login():
     session["employee_id"] = user[3]
     session["role"] = user[4]        # ← добавить
 
-    role = user[4]                   # ← добавить редирект по роли
+    role = user[4]
     if role == "Кассир":
         return redirect(url_for("tickets"))
+    elif role == "Смотритель":
+        return redirect(url_for("watcher_animals"))
     else:
         return redirect(url_for("dashboard"))
 
@@ -342,6 +345,50 @@ def add_ticket_route():
     create_ticket(ticket_type, quantity, employee_id, zoo_id)
  
     return redirect("/tickets")
+
+
+#Смотритель
+@app.route("/watcher/animals")
+def watcher_animals():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Смотритель":
+        return redirect(url_for("dashboard"))
+ 
+    animals_list = list_animals()
+    print(">>> animals_list:", animals_list)
+    return render_template("watcher_animals.html", animals=animals_list)
+ 
+ 
+# Смотритель — кормление
+@app.route("/feeding")
+def feeding():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Смотритель":
+        return redirect(url_for("dashboard"))
+ 
+    data = list_feedings()
+    print(">>> feedings:", data)
+    animals_list = list_animals()
+    return render_template("feeding.html", feedings=data, animals=animals_list)
+ 
+ 
+@app.route("/feeding/add", methods=["POST"])
+def add_feeding_route():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Смотритель":
+        return redirect(url_for("dashboard"))
+ 
+    animal_id   = request.form.get("animal_id")
+    employee_id = session.get("employee_id")
+    feed        = request.form.get("feed")
+    amount      = request.form.get("amount")
+    note        = request.form.get("note", "")
+ 
+    create_feeding(animal_id, employee_id, feed, amount, note)
+    return redirect("/feeding")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,6 +1,6 @@
 import bcrypt
 
-password = "cassa"
+password = "watcher"
 
 hashed = bcrypt.hashpw(
     password.encode(),
