@@ -1,6 +1,7 @@
 from repositories.purchase_request_items_repo import (
     get_request_items,
-    add_request_item
+    add_request_item,
+    update_request_item
 )
 
 
@@ -16,6 +17,24 @@ def create_request_item(
 ):
     add_request_item(
         request_id,
+        supplier_id,
+        food_id,
+        quantity
+    )
+
+
+def edit_request_item(
+        request_id,
+        old_supplier_id,
+        old_food_id,
+        supplier_id,
+        food_id,
+        quantity
+):
+    update_request_item(
+        request_id,
+        old_supplier_id,
+        old_food_id,
         supplier_id,
         food_id,
         quantity

@@ -1,100 +1,204 @@
-<h1>
-    Редактирование заявки №{{ request_data[0] }}
-</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">
+        Редактирование заявки №{{ request_data[0] }}
+    </h2>
+
+    <a href="/purchase-requests" class="btn btn-secondary">
+        Назад к заявкам
+    </a>
+</div>
 
 <form
     action="/purchase-requests/update/{{ request_data[0] }}"
     method="post"
+    class="mb-4"
 >
+    <div class="mb-3">
+        <label for="requestDate" class="form-label">Дата</label>
 
-    <label>Дата</label>
-
-    <input
-        type="date"
-        name="date"
-        value="{{ request_data[1] }}"
-        required
-    >
-
-    <br><br>
-
-    <label>Исполнитель</label>
-
-    <select name="executor_id">
-
-        {% for employee in employees %}
-
-        <option
-            value="{{ employee[0] }}"
-            {% if employee[0] == request_data[2] %}
-            selected
-            {% endif %}
+        <input
+            type="date"
+            id="requestDate"
+            name="date"
+            value="{{ request_data[1] }}"
+            class="form-control"
+            required
         >
-            {{ employee[1] }}
-        </option>
+    </div>
 
-        {% endfor %}
+    <div class="mb-3">
+        <label for="executorId" class="form-label">Исполнитель</label>
 
-    </select>
+        <select name="executor_id" id="executorId" class="form-select">
+            {% for employee in employees %}
+            <option
+                value="{{ employee[0] }}"
+                {% if employee[0] == request_data[2] %}
+                selected
+                {% endif %}
+            >
+                {{ employee[1] }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
 
-    <br><br>
+    <div class="mb-3">
+        <label for="requestStatus" class="form-label">Статус</label>
 
-    <label>Статус</label>
+        <select name="status" id="requestStatus" class="form-select">
+            <option
+                {% if request_data[3] == 'Создана' %}
+                selected
+                {% endif %}
+            >
+                Создана
+            </option>
 
-    <select name="status">
+            <option
+                {% if request_data[3] == 'На рассмотрении' %}
+                selected
+                {% endif %}
+            >
+                На рассмотрении
+            </option>
 
-        <option
-            {% if request_data[3] == 'Создана' %}
-            selected
-            {% endif %}
-        >
-            Создана
-        </option>
+            <option
+                {% if request_data[3] == 'Одобрена' %}
+                selected
+                {% endif %}
+            >
+                Одобрена
+            </option>
 
-        <option
-            {% if request_data[3] == 'На рассмотрении' %}
-            selected
-            {% endif %}
-        >
-            На рассмотрении
-        </option>
+            <option
+                {% if request_data[3] == 'Отклонена' %}
+                selected
+                {% endif %}
+            >
+                Отклонена
+            </option>
 
-        <option
-            {% if request_data[3] == 'Одобрена' %}
-            selected
-            {% endif %}
-        >
-            Одобрена
-        </option>
+            <option
+                {% if request_data[3] == 'Выполнена' %}
+                selected
+                {% endif %}
+            >
+                Выполнена
+            </option>
+        </select>
+    </div>
 
-        <option
-            {% if request_data[3] == 'Отклонена' %}
-            selected
-            {% endif %}
-        >
-            Отклонена
-        </option>
+    <h3 class="mb-3">Состав заявки</h3>
 
-        <option
-            {% if request_data[3] == 'Выполнена' %}
-            selected
-            {% endif %}
-        >
-            Выполнена
-        </option>
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>ID заявки</th>
+                <th>Поставщик</th>
+                <th>Корм</th>
+                <th>Количество, кг</th>
+            </tr>
+        </thead>
 
-    </select>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    {{ item[0] }}
+                    <input type="hidden" name="old_supplier_id" value="{{ item[4] }}">
+                    <input type="hidden" name="old_food_id" value="{{ item[5] }}">
+                </td>
+                <td>
+                    <select name="supplier_id" class="form-select supplier-select">
+                        {% for supplier in suppliers %}
+                        <option
+                            value="{{ supplier[0] }}"
+                            {% if supplier[0] == item[4] %}
+                            selected
+                            {% endif %}
+                        >
+                            {{ supplier[1] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="food_id" class="form-select food-select">
+                        {% for food_item in feed %}
+                        <option
+                            value="{{ food_item[0] }}"
+                            data-supplier-id="{{ food_item[2] }}"
+                            {% if food_item[0] == item[5] %}
+                            selected
+                            {% endif %}
+                        >
+                            {{ food_item[1] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input
+                        type="number"
+                        name="quantity"
+                        value="{{ item[3] }}"
+                        class="form-control"
+                        required
+                    >
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <br><br>
+    <div class="d-flex justify-content-end gap-2">
+        <a href="/purchase-requests" class="btn btn-secondary">
+            Отмена
+        </a>
 
-    <button type="submit">
-        Сохранить
-    </button>
-
+        <button type="submit" class="btn btn-success">
+            Сохранить заявку
+        </button>
+    </div>
 </form>
 
-<br>
+<script>
+    document.querySelectorAll(".supplier-select").forEach((supplierSelect) => {
+        const row = supplierSelect.closest("tr");
+        const foodSelect = row.querySelector(".food-select");
 
-<a href="/purchase-requests">
-    Назад
-</a>
+        function filterFoodOptions() {
+            let hasSelectedOption = false;
+
+            foodSelect.querySelectorAll("option").forEach((option) => {
+                const isVisible =
+                    option.dataset.supplierId === supplierSelect.value;
+
+                option.hidden = !isVisible;
+
+                if (isVisible && option.selected) {
+                    hasSelectedOption = true;
+                }
+            });
+
+            if (!hasSelectedOption) {
+                const firstVisibleOption =
+                    foodSelect.querySelector("option:not([hidden])");
+
+                if (firstVisibleOption) {
+                    firstVisibleOption.selected = true;
+                }
+            }
+        }
+
+        supplierSelect.addEventListener("change", filterFoodOptions);
+        filterFoodOptions();
+    });
+</script>
+
+{% endblock %}

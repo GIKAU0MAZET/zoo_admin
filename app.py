@@ -13,7 +13,7 @@ from service.cages_service import list_cages
 from service.employees_service import list_employees
 from service.auth_service import authenticate
 from service.purchase_requests_service import list_purchase_requests, get_purchase_request, create_purchase_request, edit_purchase_request
-from service.purchase_request_items_service import list_request_items, create_request_item
+from service.purchase_request_items_service import list_request_items, create_request_item, edit_request_item
 
 from database import get_connection
 
@@ -196,10 +196,15 @@ def add_purchase_request_item(request_id):
         quantity
     )
 
+    if request.form.get("return_to") == "edit":
+        return redirect(
+            f"/purchase-requests/edit/{request_id}"
+        )
+
     return redirect(
         f"/purchase-requests/{request_id}"
     )
-    
+
 @app.route("/purchase-requests/edit/<int:request_id>")
 def edit_purchase_request_page(request_id):
 
@@ -207,10 +212,20 @@ def edit_purchase_request_page(request_id):
 
     employees = list_employees()
 
+    items = list_request_items(request_id)
+
+    suppliers = get_all_suppliers()
+
+    feed = get_all_feed()
+
     return render_template(
         "edit_purchase_request.html",
         request_data=request_data,
-        employees=employees
+        request_id=request_id,
+        employees=employees,
+        items=items,
+        suppliers=suppliers,
+        feed=feed
     )
     
 @app.route(
@@ -232,7 +247,31 @@ def update_purchase_request_route(request_id):
         status
     )
 
-    return redirect("/purchase-requests")
+    old_supplier_ids = request.form.getlist("old_supplier_id")
+    old_food_ids = request.form.getlist("old_food_id")
+    supplier_ids = request.form.getlist("supplier_id")
+    food_ids = request.form.getlist("food_id")
+    quantities = request.form.getlist("quantity")
+
+    for old_supplier_id, old_food_id, supplier_id, food_id, quantity in zip(
+            old_supplier_ids,
+            old_food_ids,
+            supplier_ids,
+            food_ids,
+            quantities
+    ):
+        edit_request_item(
+            request_id,
+            old_supplier_id,
+            old_food_id,
+            supplier_id,
+            food_id,
+            quantity
+        )
+
+    return redirect(
+        f"/purchase-requests/edit/{request_id}"
+    )
     
 @app.route("/api/feed/<int:supplier_id>")
 def get_feed_by_supplier(supplier_id):

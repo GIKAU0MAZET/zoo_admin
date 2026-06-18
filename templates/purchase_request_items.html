@@ -1,63 +1,81 @@
-<h1>Состав заявки №{{ request_info[0] }} от {{ request_info[1] }}</h1>
+{% extends 'base.html' %}
 
-<a href="/purchase-requests">
-    Назад к заявкам
-</a>
+{% block content %}
 
-<h2>Добавить позицию</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">
+        Состав заявки №{{ request_info[0] }} от {{ request_info[1] }}
+    </h2>
 
-<form action="/purchase-requests/{{ request_id }}/add-item" method="post">
+    <a href="/purchase-requests" class="btn btn-secondary">
+        Назад к заявкам
+    </a>
+</div>
 
-    <label>Поставщик</label>
+<h3 class="mb-3">Добавить позицию</h3>
 
-    <select name="supplier_id" id="supplierSelect">
+<form action="/purchase-requests/{{ request_id }}/add-item" method="post" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+        <label for="supplierSelect" class="form-label">Поставщик</label>
 
-        {% for supplier in suppliers %}
+        <select name="supplier_id" id="supplierSelect" class="form-select">
+            {% for supplier in suppliers %}
+            <option value="{{ supplier[0] }}">
+                {{ supplier[1] }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
 
-        <option value="{{ supplier[0] }}">
-            {{ supplier[1] }}
-        </option>
+    <div class="col-md-4">
+        <label for="foodSelect" class="form-label">Корм</label>
 
-        {% endfor %}
+        <select name="food_id" id="foodSelect" class="form-select">
+        </select>
+    </div>
 
-    </select>
+    <div class="col-md-2">
+        <label for="quantity" class="form-label">Количество</label>
 
-    <br><br>
+        <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            class="form-control"
+            placeholder="Количество"
+            required
+        >
+    </div>
 
-    <label>Корм</label>
-
-    <select name="food_id" id="foodSelect">
-
-    </select>
-
-    <input type="number" name="quantity" placeholder="Количество" required>
-
-    <button type="submit">
-        Добавить
-    </button>
-
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+            Добавить
+        </button>
+    </div>
 </form>
 
-<hr>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID заявки</th>
+            <th>Поставщик</th>
+            <th>Корм</th>
+            <th>Количество, кг</th>
+        </tr>
+    </thead>
 
-<table border="1">
-
-    <tr>
-        <th>ID заявки</th>
-        <th>Поставщик</th>
-        <th>Корм</th>
-        <th>Количество, кг</th>
-    </tr>
-
-    {% for item in items %}
-    <tr>
-        <td>{{ item[0] }}</td>
-        <td>{{ item[1] }}</td>
-        <td>{{ item[2] }}</td>
-        <td>{{ item[3] }}</td>
-    </tr>
-    {% endfor %}
-
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+
+{% endblock %}

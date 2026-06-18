@@ -7,13 +7,20 @@ def get_all_purchase_requests():
 
     cur.execute("""
         SELECT
-            id_заявки,
-            дата,
-            id_сотрудника,
-            id_исполнителя,
-            статус_заявки
-        FROM заявки_на_закупку
-        ORDER BY id_заявки
+            z.id_заявки,
+            z.дата,
+
+            s1.фамилия || ' ' || s1.имя || ' ' || s1.отчество AS сотрудник,
+            s2.фамилия || ' ' || s2.имя || ' ' || s2.отчество AS исполнитель,
+
+            z.статус_заявки
+
+        FROM заявки_на_закупку z
+
+        JOIN сотрудники s1 ON s1.сотрудник_id = z.id_сотрудника
+        JOIN сотрудники s2 ON s2.сотрудник_id = z.id_исполнителя
+
+        ORDER BY z.id_заявки
     """)
 
     rows = cur.fetchall()
@@ -29,7 +36,9 @@ def get_purchase_request_by_id(request_id):
     cur.execute("""
         SELECT
             id_заявки,
-            дата
+            дата,
+            id_исполнителя,
+            статус_заявки
         FROM заявки_на_закупку
         WHERE id_заявки = %s
     """, (request_id,))

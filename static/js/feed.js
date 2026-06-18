@@ -12,6 +12,9 @@ async function loadFeed() {
     const foodSelect =
         document.getElementById("foodSelect");
 
+    const selectedFoodId =
+        foodSelect.dataset.selectedFoodId;
+
     foodSelect.innerHTML = "";
 
     feed.forEach(item => {
@@ -23,9 +26,15 @@ async function loadFeed() {
 
         option.textContent = item.name;
 
+        if (selectedFoodId === String(item.id)) {
+            option.selected = true;
+        }
+
         foodSelect.appendChild(option);
 
     });
+
+    delete foodSelect.dataset.selectedFoodId;
 
 }
 

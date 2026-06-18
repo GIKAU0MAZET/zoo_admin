@@ -8,7 +8,8 @@ def get_all_feed():
     cur.execute("""
         SELECT
             id_корма,
-            название
+            название,
+            id_поставщика
         FROM корм
         ORDER BY название
     """)

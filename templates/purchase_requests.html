@@ -1,46 +1,51 @@
-<h1>Заявки на закупку</h1>
+{% extends 'base.html' %}
 
-<a href="/">Назад</a>
+{% block content %}
 
-<form action="/purchase-requests/add" method="post">
-    <button type="submit">
-        Создать заявку
-    </button>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Заявки на закупку</h2>
 
-</form>
+    <form action="/purchase-requests/add" method="post" class="mb-0">
+        <button type="submit" class="btn btn-primary">
+            Создать заявку
+        </button>
+    </form>
+</div>
 
-<hr>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Сотрудник</th>
+            <th>Исполнитель</th>
+            <th>Статус</th>
+            <th>Состав</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
 
-<table border="1">
-
-    <tr>
-        <th>ID</th>
-        <th>Дата</th>
-        <th>Сотрудник</th>
-        <th>Исполнитель</th>
-        <th>Статус</th>
-        <th>Состав</th>
-        <th>Действия</th>
-    </tr>
-
-    {% for r in requests %}
-    <tr>
-        <td>{{ r[0] }}</td>
-        <td>{{ r[1] }}</td>
-        <td>{{ r[2] }}</td>
-        <td>{{ r[3] }}</td>
-        <td>{{ r[4] }}</td>
-        <td>
-            <a href="/purchase-requests/{{ r[0] }}">
-                Открыть
-            </a>
-        </td>
-        <td>
-            <a href="/purchase-requests/edit/{{ r[0] }}">
-                Редактировать
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-
+    <tbody>
+        {% for r in requests %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>
+                <a href="/purchase-requests/{{ r[0] }}" class="btn btn-primary btn-sm">
+                    Открыть
+                </a>
+            </td>
+            <td>
+                <a href="/purchase-requests/edit/{{ r[0] }}" class="btn btn-warning btn-sm">
+                    Редактировать
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
+
+{% endblock %}
