@@ -1,0 +1,100 @@
+<h1>
+    Редактирование заявки №{{ request_data[0] }}
+</h1>
+
+<form
+    action="/purchase-requests/update/{{ request_data[0] }}"
+    method="post"
+>
+
+    <label>Дата</label>
+
+    <input
+        type="date"
+        name="date"
+        value="{{ request_data[1] }}"
+        required
+    >
+
+    <br><br>
+
+    <label>Исполнитель</label>
+
+    <select name="executor_id">
+
+        {% for employee in employees %}
+
+        <option
+            value="{{ employee[0] }}"
+            {% if employee[0] == request_data[2] %}
+            selected
+            {% endif %}
+        >
+            {{ employee[1] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Статус</label>
+
+    <select name="status">
+
+        <option
+            {% if request_data[3] == 'Создана' %}
+            selected
+            {% endif %}
+        >
+            Создана
+        </option>
+
+        <option
+            {% if request_data[3] == 'На рассмотрении' %}
+            selected
+            {% endif %}
+        >
+            На рассмотрении
+        </option>
+
+        <option
+            {% if request_data[3] == 'Одобрена' %}
+            selected
+            {% endif %}
+        >
+            Одобрена
+        </option>
+
+        <option
+            {% if request_data[3] == 'Отклонена' %}
+            selected
+            {% endif %}
+        >
+            Отклонена
+        </option>
+
+        <option
+            {% if request_data[3] == 'Выполнена' %}
+            selected
+            {% endif %}
+        >
+            Выполнена
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <button type="submit">
+        Сохранить
+    </button>
+
+</form>
+
+<br>
+
+<a href="/purchase-requests">
+    Назад
+</a>

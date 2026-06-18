@@ -1,0 +1,46 @@
+<h1>Заявки на закупку</h1>
+
+<a href="/">Назад</a>
+
+<form action="/purchase-requests/add" method="post">
+    <button type="submit">
+        Создать заявку
+    </button>
+
+</form>
+
+<hr>
+
+<table border="1">
+
+    <tr>
+        <th>ID</th>
+        <th>Дата</th>
+        <th>Сотрудник</th>
+        <th>Исполнитель</th>
+        <th>Статус</th>
+        <th>Состав</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for r in requests %}
+    <tr>
+        <td>{{ r[0] }}</td>
+        <td>{{ r[1] }}</td>
+        <td>{{ r[2] }}</td>
+        <td>{{ r[3] }}</td>
+        <td>{{ r[4] }}</td>
+        <td>
+            <a href="/purchase-requests/{{ r[0] }}">
+                Открыть
+            </a>
+        </td>
+        <td>
+            <a href="/purchase-requests/edit/{{ r[0] }}">
+                Редактировать
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>

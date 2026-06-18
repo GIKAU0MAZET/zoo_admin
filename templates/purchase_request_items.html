@@ -1,0 +1,63 @@
+<h1>Состав заявки №{{ request_info[0] }} от {{ request_info[1] }}</h1>
+
+<a href="/purchase-requests">
+    Назад к заявкам
+</a>
+
+<h2>Добавить позицию</h2>
+
+<form action="/purchase-requests/{{ request_id }}/add-item" method="post">
+
+    <label>Поставщик</label>
+
+    <select name="supplier_id" id="supplierSelect">
+
+        {% for supplier in suppliers %}
+
+        <option value="{{ supplier[0] }}">
+            {{ supplier[1] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Корм</label>
+
+    <select name="food_id" id="foodSelect">
+
+    </select>
+
+    <input type="number" name="quantity" placeholder="Количество" required>
+
+    <button type="submit">
+        Добавить
+    </button>
+
+</form>
+
+<hr>
+
+<table border="1">
+
+    <tr>
+        <th>ID заявки</th>
+        <th>Поставщик</th>
+        <th>Корм</th>
+        <th>Количество, кг</th>
+    </tr>
+
+    {% for item in items %}
+    <tr>
+        <td>{{ item[0] }}</td>
+        <td>{{ item[1] }}</td>
+        <td>{{ item[2] }}</td>
+        <td>{{ item[3] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
