@@ -30,6 +30,10 @@
             <a href="/watcher/animals">Животные</a>
             <a href="/feeding">Кормление</a>
 
+            {% elif session.get('role') == 'Ветеринар' %}
+            <a href="/vet/animals">Животные</a>
+            <a href="/medical-records">Медицинские записи</a>
+
             {% else %}
 
             <a href="/">Главная</a>

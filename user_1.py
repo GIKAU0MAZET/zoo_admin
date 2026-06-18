@@ -1,6 +1,6 @@
 import bcrypt
 
-password = "watcher"
+password = "vet"
 
 hashed = bcrypt.hashpw(
     password.encode(),

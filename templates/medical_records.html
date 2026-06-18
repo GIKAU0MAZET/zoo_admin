@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Медицинские записи</h2>
+</div>
+
+{# Форма добавления #}
+<div class="card mb-4" style="max-width: 580px;">
+    <div class="card-header bg-dark text-white">
+        Добавить запись
+    </div>
+    <div class="card-body">
+        <form action="/medical-records/add" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Животное <span class="text-danger">*</span></label>
+                <select name="animal_id" class="form-select" required>
+                    <option value="">— выберите —</option>
+                    {% for a in animals %}
+                    <option value="{{ a.id }}">{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Название осмотра <span class="text-danger">*</span></label>
+                <input type="text" name="name" class="form-control"
+                       placeholder="Например: плановый осмотр, вакцинация..." required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Дата осмотра <span class="text-danger">*</span></label>
+                <input type="date" name="date" class="form-control" required
+                       value="{{ today }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                <select name="condition" class="form-select" required>
+                    <option value="">— выберите —</option>
+                    <option value="Здоров">Здоров</option>
+                    <option value="Удовлетворительное">Удовлетворительное</option>
+                    <option value="Требует наблюдения">Требует наблюдения</option>
+                    <option value="Болен">Болен</option>
+                    <option value="На лечении">На лечении</option>
+                    <option value="Выздоровел">Выздоровел</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">ID заявки на лечение</label>
+                <input type="number" name="request_id" class="form-control"
+                       placeholder="Необязательно">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Добавить запись
+            </button>
+        </form>
+    </div>
+</div>
+
+{# История записей #}
+<h5 class="mb-3">История записей</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Животное</th>
+            <th>Ветеринар</th>
+            <th>Название</th>
+            <th>Дата осмотра</th>
+            <th>Состояние</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>{{ r[5].strftime('%d.%m.%Y') if r[5] else '—' }}</td>
+            <td>
+                {% if r[6] == 'Здоров' %}
+                    <span class="badge bg-success">{{ r[6] }}</span>
+                {% elif r[6] == 'Болен' %}
+                    <span class="badge bg-danger">{{ r[6] }}</span>
+                {% elif r[6] == 'На лечении' %}
+                    <span class="badge bg-warning text-dark">{{ r[6] }}</span>
+                {% elif r[6] == 'Выздоровел' %}
+                    <span class="badge bg-info text-dark">{{ r[6] }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ r[6] or '—' }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

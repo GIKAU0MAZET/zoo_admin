@@ -16,6 +16,7 @@ from service.purchase_requests_service import list_purchase_requests, get_purcha
 from service.purchase_request_items_service import list_request_items, create_request_item, edit_request_item
 from service.tickets_service import list_tickets, create_ticket
 from service.feeding_service import list_feedings, create_feeding
+from service.medical_records_service import list_medical_records, create_medical_record
 
 from database import get_connection
 
@@ -65,13 +66,15 @@ def login():
 
     session["user_id"] = user[0]
     session["employee_id"] = user[3]
-    session["role"] = user[4]        # ← добавить
+    session["role"] = user[4]        
 
     role = user[4]
     if role == "Кассир":
         return redirect(url_for("tickets"))
     elif role == "Смотритель":
         return redirect(url_for("watcher_animals"))
+    elif role == "Ветеринар":
+        return redirect(url_for("vet_animals"))
     else:
         return redirect(url_for("dashboard"))
 
@@ -389,6 +392,48 @@ def add_feeding_route():
  
     create_feeding(animal_id, employee_id, feed, amount, note)
     return redirect("/feeding")
+
+#Ветеринар
+@app.route("/vet/animals")
+def vet_animals():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Ветеринар":
+        return redirect(url_for("dashboard"))
+ 
+    animals_list = list_animals()
+    return render_template("vet_animals.html", animals=animals_list)
+ 
+ 
+# Ветеринар — медицинские записи
+@app.route("/medical-records")
+def medical_records():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Ветеринар":
+        return redirect(url_for("dashboard"))
+ 
+    data = list_medical_records()
+    animals_list = list_animals()
+    return render_template("medical_records.html", records=data, animals=animals_list)
+ 
+ 
+@app.route("/medical-records/add", methods=["POST"])
+def add_medical_record_route():
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Ветеринар":
+        return redirect(url_for("dashboard"))
+ 
+    request_id  = request.form.get("request_id") or None
+    animal_id   = request.form.get("animal_id")
+    employee_id = session.get("employee_id")
+    name        = request.form.get("name")
+    date        = request.form.get("date")
+    condition   = request.form.get("condition")
+ 
+    create_medical_record(request_id, animal_id, employee_id, name, date, condition)
+    return redirect("/medical-records")
 
 if __name__ == "__main__":
     app.run(debug=True)
