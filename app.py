@@ -7,6 +7,7 @@ from repositories.animals_repo import get_animal_by_id, get_animals_for_select
 from repositories.feed_repo import get_all_feed
 from repositories.suppliers_repo import get_all_suppliers
 from repositories.veterinarians_repo import get_all_veterinarians
+from repositories.purchases_repo import get_available_requests
 
 from service.animals_service import list_animals, create_animal, remove_animal, edit_animal
 from service.species_service import list_species
@@ -19,6 +20,7 @@ from service.tickets_service import list_tickets, create_ticket
 from service.feeding_service import list_feedings, create_feeding
 from service.medical_records_service import list_medical_records, create_medical_record
 from service.treatment_requests_service import list_treatment_requests, create_treatment_request, get_treatment_request, edit_treatment_request
+from service.purchases_service import list_purchases, create_purchase
 
 from database import get_connection
 
@@ -410,6 +412,31 @@ def update_treatment_request_route(request_id):
     )
 
     return redirect("/treatment-requests")  
+
+@app.route("/purchases")
+def purchases():
+
+    purchases_data = list_purchases()
+
+    available_requests = get_available_requests()
+
+    return render_template(
+        "purchases.html",
+        purchases=purchases_data,
+        requests=available_requests
+    )
+    
+@app.route(
+    "/purchases/add",
+    methods=["POST"]
+)
+def add_purchase_route():
+
+    request_id = request.form.get("request_id")
+
+    create_purchase(request_id)
+
+    return redirect("/purchases")   
 
 #Кассир
 @app.route("/tickets")
