@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-3">
+    <a href="/director/reports" class="btn btn-outline-secondary btn-sm">← Назад</a>
+    <h2 class="mb-0">Мед. активность ветеринаров</h2>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ветеринар</th>
+            <th>Осмотров проведено</th>
+            <th>Последний осмотр</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in vets %}
+        <tr>
+            <td>{{ v[0] }}</td>
+            <td>{{ v[1] }}</td>
+            <td>{{ v[2].strftime('%d.%m.%Y') if v[2] else '—' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

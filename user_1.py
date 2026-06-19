@@ -1,6 +1,6 @@
 import bcrypt
 
-password = "vet"
+password = "dir"
 
 hashed = bcrypt.hashpw(
     password.encode(),

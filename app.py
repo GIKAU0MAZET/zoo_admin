@@ -21,6 +21,12 @@ from service.feeding_service import list_feedings, create_feeding
 from service.medical_records_service import list_treatment_requests_for_vet, list_medical_records_for_vet, create_medical_record, get_request_for_vet
 from service.treatment_requests_service import list_treatment_requests, create_treatment_request, get_treatment_request, edit_treatment_request
 from service.purchases_service import list_purchases, create_purchase
+from service.director_service import (
+    list_employees_full, get_employee, create_employee, edit_employee,
+    list_suppliers_full, get_supplier, create_supplier, edit_supplier,
+    report_animals_condition, report_medical_activity,
+    report_finance, report_attendance
+)
 
 from database import get_connection
 
@@ -29,13 +35,19 @@ app = Flask(__name__)
 app.secret_key = "zoo_secret_key_2026"
 
 @app.context_processor
-def inject_zoo_name():
+def inject_current_user():
+    if "employee_id" not in session:
+        return {"current_user": None}
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("""SELECT "Название зоопарка" FROM "Зоопарк" LIMIT 1""")
+    cur.execute("""
+        SELECT фамилия || ' ' || имя || ' ' || отчество
+        FROM сотрудники
+        WHERE сотрудник_id = %s
+    """, (session["employee_id"],))
     row = cur.fetchone()
     conn.close()
-    return {"zoo_name": row[0] if row else "Зоопарк"}
+    return {"current_user": row[0] if row else None}
 
 @app.route("/")
 def dashboard():
@@ -79,6 +91,8 @@ def login():
         return redirect(url_for("watcher_animals"))
     elif role == "Ветеринар":
         return redirect(url_for("vet_animals"))
+    elif role == "Директор":
+        return redirect(url_for("director_employees"))
     else:
         return redirect(url_for("dashboard"))
 
@@ -577,6 +591,164 @@ def add_medical_record_route(request_id):
  
     create_medical_record(request_id, animal_id, employee_id, name, date, condition)
     return redirect("/medical-records")
+
+#Директор
+# ── ПЕРСОНАЛ ──────────────────────────────────────────────────
+ 
+@app.route("/director/employees")
+def director_employees():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = list_employees_full()
+    return render_template("director_employees.html", employees=data)
+ 
+ 
+@app.route("/director/employees/add", methods=["GET", "POST"])
+def director_add_employee():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+ 
+    if request.method == "POST":
+        create_employee(
+            request.form.get("last_name"),
+            request.form.get("first_name"),
+            request.form.get("middle_name"),
+            request.form.get("position"),
+            request.form.get("phone"),
+            request.form.get("hire_date"),
+        )
+        return redirect("/director/employees")
+ 
+    return render_template("director_employee_form.html", employee=None)
+ 
+ 
+@app.route("/director/employees/edit/<int:employee_id>", methods=["GET", "POST"])
+def director_edit_employee(employee_id):
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+ 
+    if request.method == "POST":
+        edit_employee(
+            employee_id,
+            request.form.get("last_name"),
+            request.form.get("first_name"),
+            request.form.get("middle_name"),
+            request.form.get("position"),
+            request.form.get("phone"),
+            request.form.get("hire_date"),
+        )
+        return redirect("/director/employees")
+ 
+    employee = get_employee(employee_id)
+    return render_template("director_employee_form.html", employee=employee)
+ 
+ 
+# ── ПОСТАВЩИКИ ────────────────────────────────────────────────
+ 
+@app.route("/director/suppliers")
+def director_suppliers():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = list_suppliers_full()
+    return render_template("director_suppliers.html", suppliers=data)
+ 
+ 
+@app.route("/director/suppliers/add", methods=["GET", "POST"])
+def director_add_supplier():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+ 
+    if request.method == "POST":
+        create_supplier(
+            request.form.get("name"),
+            request.form.get("legal_address"),
+            request.form.get("actual_address"),
+            request.form.get("phone"),
+            request.form.get("email"),
+        )
+        return redirect("/director/suppliers")
+ 
+    return render_template("director_supplier_form.html", supplier=None)
+ 
+ 
+@app.route("/director/suppliers/edit/<int:supplier_id>", methods=["GET", "POST"])
+def director_edit_supplier(supplier_id):
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+ 
+    if request.method == "POST":
+        edit_supplier(
+            supplier_id,
+            request.form.get("name"),
+            request.form.get("legal_address"),
+            request.form.get("actual_address"),
+            request.form.get("phone"),
+            request.form.get("email"),
+        )
+        return redirect("/director/suppliers")
+ 
+    supplier = get_supplier(supplier_id)
+    return render_template("director_supplier_form.html", supplier=supplier)
+ 
+ 
+# ── ЗАЯВКИ (только просмотр) ──────────────────────────────────
+ 
+@app.route("/director/purchase-requests")
+def director_purchase_requests():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = list_purchase_requests()
+    return render_template("director_purchase_requests.html", requests=data)
+ 
+ 
+@app.route("/director/treatment-requests")
+def director_treatment_requests():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = list_treatment_requests()
+    return render_template("director_treatment_requests.html", requests=data)
+ 
+ 
+# ── ОТЧЁТЫ ────────────────────────────────────────────────────
+ 
+@app.route("/director/reports")
+def director_reports():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+ 
+    return render_template("director_reports.html")
+ 
+ 
+@app.route("/director/reports/animals")
+def director_report_animals():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = report_animals_condition()
+    return render_template("director_report_animals.html", animals=data)
+ 
+ 
+@app.route("/director/reports/medical")
+def director_report_medical():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = report_medical_activity()
+    return render_template("director_report_medical.html", vets=data)
+ 
+ 
+@app.route("/director/reports/finance")
+def director_report_finance():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = report_finance()
+    return render_template("director_report_finance.html", income=data)
+ 
+ 
+@app.route("/director/reports/attendance")
+def director_report_attendance():
+    if "user_id" not in session or session.get("role") != "Директор":
+        return redirect("/login")
+    data = report_attendance()
+    return render_template("director_report_attendance.html", rows=data)
 
 if __name__ == "__main__":
     app.run(debug=True)

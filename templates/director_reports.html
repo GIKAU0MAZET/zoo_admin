@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Отчёты</h2>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <a href="/director/reports/animals" class="text-decoration-none">
+            <div class="card h-100 border-success">
+                <div class="card-body">
+                    <h5 class="card-title">🐾 Состояние животных</h5>
+                    <p class="card-text text-muted">Актуальное состояние каждого животного по последней медзаписи</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="/director/reports/medical" class="text-decoration-none">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">🩺 Мед. активность</h5>
+                    <p class="card-text text-muted">Количество осмотров по ветеринарам</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="/director/reports/finance" class="text-decoration-none">
+            <div class="card h-100 border-warning">
+                <div class="card-body">
+                    <h5 class="card-title">💰 Финансы зоопарка</h5>
+                    <p class="card-text text-muted">Доходы от продажи билетов по месяцам</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="/director/reports/attendance" class="text-decoration-none">
+            <div class="card h-100 border-info">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Посещаемость</h5>
+                    <p class="card-text text-muted">Количество посетителей по дням и типам билетов</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

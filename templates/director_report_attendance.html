@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-3">
+    <a href="/director/reports" class="btn btn-outline-secondary btn-sm">← Назад</a>
+    <h2 class="mb-0">Посещаемость зоопарка</h2>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Тип билета</th>
+            <th>Посетителей</th>
+            <th>Выручка</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ "{:,.0f}".format(row[3]) }} ₽</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

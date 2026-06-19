@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-3">
+    <a href="/director/reports" class="btn btn-outline-secondary btn-sm">← Назад</a>
+    <h2 class="mb-0">Финансы зоопарка</h2>
+</div>
+
+<table class="table table-striped" style="max-width:400px;">
+    <thead>
+        <tr>
+            <th>Месяц</th>
+            <th>Доход от билетов</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set total = namespace(sum=0) %}
+        {% for row in income %}
+        {% set total.sum = total.sum + row[1] %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ "{:,.0f}".format(row[1]) }} ₽</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot class="table-dark">
+        <tr>
+            <th>Итого</th>
+            <th>{{ "{:,.0f}".format(total.sum) }} ₽</th>
+        </tr>
+    </tfoot>
+</table>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-3">
+    <a href="/director/reports" class="btn btn-outline-secondary btn-sm">← Назад</a>
+    <h2 class="mb-0">Состояние животных</h2>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Кличка</th>
+            <th>Вид</th>
+            <th>Состояние</th>
+            <th>Дата осмотра</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in animals %}
+        <tr>
+            <td>{{ a[0] }}</td>
+            <td>{{ a[1] }}</td>
+            <td>{{ a[2] or '—' }}</td>
+            <td>
+                {% if a[3] == 'Здоров' %}
+                    <span class="badge bg-success">{{ a[3] }}</span>
+                {% elif a[3] == 'Болен' %}
+                    <span class="badge bg-danger">{{ a[3] }}</span>
+                {% elif a[3] == 'На лечении' %}
+                    <span class="badge bg-warning text-dark">{{ a[3] }}</span>
+                {% elif a[3] == 'Выздоровел' %}
+                    <span class="badge bg-info text-dark">{{ a[3] }}</span>
+                {% elif a[3] %}
+                    <span class="badge bg-secondary">{{ a[3] }}</span>
+                {% else %}
+                    <span class="text-muted">Нет данных</span>
+                {% endif %}
+            </td>
+            <td>{{ a[4].strftime('%d.%m.%Y') if a[4] else '—' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

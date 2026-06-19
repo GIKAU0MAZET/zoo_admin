@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-3">Заявки на лечение</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Животное</th>
+            <th>Ветеринар</th>
+            <th>Название</th>
+            <th>Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in requests %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>
+                {% if r[5] == 'Завершена' %}
+                    <span class="badge bg-success">{{ r[5] }}</span>
+                {% elif r[5] == 'Выполняется' %}
+                    <span class="badge bg-primary">{{ r[5] }}</span>
+                {% elif r[5] == 'Одобрена' %}
+                    <span class="badge bg-warning text-dark">{{ r[5] }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ r[5] }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -34,6 +34,13 @@
             <a href="/vet/animals">Животные</a>
             <a href="/medical-records">Медицинские записи</a>
 
+            {% elif session.get('role') == 'Директор' %}
+            <a href="/director/employees">Персонал</a>
+            <a href="/director/suppliers">Поставщики</a>
+            <a href="/director/purchase-requests">Заявки на закупку</a>
+            <a href="/director/treatment-requests">Заявки на лечение</a>
+            <a href="/director/reports">Отчёты</a>
+
             {% else %}
 
             <a href="/">Главная</a>
@@ -46,7 +53,12 @@
 
             {% endif %}
 
-            <a href="/logout">🚪 Выйти</a>
+            <div class="sidebar-profile">
+                <hr>
+                <div class="profile-name">{{ current_user or '—' }}</div>
+                <div class="profile-role">{{ session.get('role', '') }}</div>
+                <a href="/logout" class="btn btn-outline-light btn-sm w-100 mt-2">🚪 Выйти</a>
+            </div>
 
         </div>
 
