@@ -1,149 +1,104 @@
-<h1>Заявки на лечение</h1>
+{% extends 'base.html' %}
 
-<a href="/">Назад</a>
+{% block content %}
 
-<h2>Новая заявка</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Заявки на лечение</h2>
+</div>
 
-<form action="/treatment-requests/add" method="post">
+{# Форма создания #}
+<div class="card mb-4" style="max-width: 580px;">
+    <div class="card-header bg-dark text-white">Новая заявка</div>
+    <div class="card-body">
+        <form action="/treatment-requests/add" method="post">
 
-    <br><br>
+            <div class="mb-3">
+                <label class="form-label">Животное *</label>
+                <select name="animal_id" class="form-select" required>
+                    <option value="">— выберите —</option>
+                    {% for animal in animals %}
+                    <option value="{{ animal[0] }}">{{ animal[1] }} — {{ animal[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <label>Животное</label>
+            <div class="mb-3">
+                <label class="form-label">Ветеринар *</label>
+                <select name="veterinarian_id" class="form-select" required>
+                    <option value="">— выберите —</option>
+                    {% for vet in veterinarians %}
+                    <option value="{{ vet[0] }}">{{ vet[1] }} {{ vet[2] }} {{ vet[3] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <select name="animal_id">
+            <div class="mb-3">
+                <label class="form-label">Тип лечения *</label>
+                <select name="title" class="form-select" required>
+                    {% for t in ['Осмотр', 'Повторный осмотр', 'Профилактика', 'Контроль состояния', 'Лечение', 'Вакцинация'] %}
+                    <option value="{{ t }}">{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        {% for animal in animals %}
+            <div class="mb-3">
+                <label class="form-label">Статус</label>
+                <select name="status" class="form-select">
+                    {% for s in ['Создана', 'На рассмотрении', 'Одобрена', 'Выполняется', 'Завершена'] %}
+                    <option value="{{ s }}">{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <option value="{{ animal[0] }}">
-            {{ animal[1] }} - {{ animal[2] }}
-        </option>
+            <button type="submit" class="btn btn-primary">Создать заявку</button>
+        </form>
+    </div>
+</div>
 
+{# Таблица заявок #}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Животное</th>
+            <th>Ветеринар</th>
+            <th>Тип</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in requests %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1].strftime('%d.%m.%Y') if r[1] else '—' }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>
+                {% if r[5] == 'Завершена' %}
+                    <span class="badge bg-success">{{ r[5] }}</span>
+                {% elif r[5] == 'Выполняется' %}
+                    <span class="badge bg-primary">{{ r[5] }}</span>
+                {% elif r[5] == 'Одобрена' %}
+                    <span class="badge bg-warning text-dark">{{ r[5] }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ r[5] }}</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if r[5] != 'Завершена' %}
+                <a href="/treatment-requests/edit/{{ r[0] }}" class="btn btn-sm btn-warning">
+                    Редактировать
+                </a>
+                {% else %}
+                <span class="text-muted">Завершена</span>
+                {% endif %}
+            </td>
+        </tr>
         {% endfor %}
-
-    </select>
-
-    <br><br>
-
-    <label>Ветеринар</label>
-
-    <select name="veterinarian_id">
-
-        {% for vet in veterinarians %}
-
-        <option value="{{ vet[0] }}">
-            {{ vet[1] }}
-            {{ vet[2] }}
-            {{ vet[3] }}
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-    <br><br>
-
-    <label>Тип лечения</label>
-
-    <select name="title" required>
-
-        <option value="Осмотр">
-            Осмотр
-        </option>
-
-        <option value="Повторный осмотр">
-            Повторный осмотр
-        </option>
-
-        <option value="Профилактика">
-            Профилактика
-        </option>
-
-        <option value="Контроль состояния">
-            Контроль состояния
-        </option>
-
-        <option value="Лечение">
-            Лечение
-        </option>
-
-        <option value="Вакцинация">
-            Вакцинация
-        </option>
-
-    </select>
-
-    <br><br>
-
-    <select name="status">
-
-        <option>Создана</option>
-
-        <option>
-            На рассмотрении
-        </option>
-
-        <option>
-            Одобрена
-        </option>
-
-        <option>
-            Выполняется
-        </option>
-
-        <option>
-            Завершена
-        </option>
-
-    </select>
-
-    <br><br>
-
-    <button type="submit">
-        Создать заявку
-    </button>
-
-</form>
-
-<table border="1">
-
-    <tr>
-        <th>ID</th>
-        <th>Дата</th>
-        <th>Животное</th>
-        <th>Ветеринар</th>
-        <th>Название</th>
-        <th>Статус</th>
-        <th>Действия</th>
-    </tr>
-
-    {% for r in requests %}
-
-    <tr>
-
-        <td>{{ r[0] }}</td>
-
-        <td>{{ r[1] }}</td>
-
-        <td>{{ r[2] }}</td>
-
-        <td>{{ r[3] }}</td>
-
-        <td>{{ r[4] }}</td>
-
-        <td>{{ r[5] }}</td>
-
-        <td>
-            {% if r[5] != 'Завершена' %}
-            <a href="/treatment-requests/edit/{{ r[0] }}">Редактировать</a>
-            {% else %}
-            <span class="text-muted">Завершена</span>
-            {% endif %}
-        </td>
-
-    </tr>
-
-    {% endfor %}
-
+    </tbody>
 </table>
 
-<hr>
+{% endblock %}

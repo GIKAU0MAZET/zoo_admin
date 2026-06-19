@@ -1,122 +1,73 @@
-<h1>
-    Редактирование заявки №{{ request_data[0] }}
-</h1>
+{% extends 'base.html' %}
 
-<form
-    action="/treatment-requests/update/{{ request_data[0] }}"
-    method="post"
->
+{% block content %}
 
-    <label>Животное</label>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Редактирование заявки №{{ request_data[0] }}</h5>
+            </div>
+            <div class="card-body">
+                <form action="/treatment-requests/update/{{ request_data[0] }}" method="post">
 
-    <select name="animal_id">
+                    <div class="mb-3">
+                        <label class="form-label">Животное *</label>
+                        <select name="animal_id" class="form-select" required>
+                            {% for animal in animals %}
+                            <option value="{{ animal[0] }}"
+                                {% if animal[0] == request_data[2] %}selected{% endif %}>
+                                {{ animal[1] }} — {{ animal[2] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-        {% for animal in animals %}
+                    <div class="mb-3">
+                        <label class="form-label">Ветеринар *</label>
+                        <select name="veterinarian_id" class="form-select" required>
+                            {% for vet in veterinarians %}
+                            <option value="{{ vet[0] }}"
+                                {% if vet[0] == request_data[3] %}selected{% endif %}>
+                                {{ vet[1] }} {{ vet[2] }} {{ vet[3] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-        <option
-            value="{{ animal[0] }}"
-            {% if animal[0] == request_data[2] %}
-            selected
-            {% endif %}
-        >
-            {{ animal[1] }} — {{ animal[2] }}
-        </option>
+                    <div class="mb-3">
+                        <label class="form-label">Тип лечения *</label>
+                        <select name="title" class="form-select" required>
+                            {% for t in ['Осмотр', 'Повторный осмотр', 'Профилактика', 'Контроль состояния', 'Лечение', 'Вакцинация'] %}
+                            <option value="{{ t }}"
+                                {% if request_data[4] == t %}selected{% endif %}>
+                                {{ t }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-        {% endfor %}
+                    <div class="mb-3">
+                        <label class="form-label">Статус</label>
+                        <select name="status" class="form-select">
+                            {% for s in ['Создана', 'На рассмотрении', 'Одобрена', 'Выполняется', 'Завершена'] %}
+                            <option value="{{ s }}"
+                                {% if request_data[5] == s %}selected{% endif %}>
+                                {{ s }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    </select>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <a href="/treatment-requests" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
 
-    <br><br>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <label>Ветеринар</label>
-
-    <select name="veterinarian_id">
-
-        {% for vet in veterinarians %}
-
-        <option
-            value="{{ vet[0] }}"
-            {% if vet[0] == request_data[3] %}
-            selected
-            {% endif %}
-        >
-            {{ vet[1] }} {{ vet[2] }} {{ vet[3] }}
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-    <br><br>
-
-    <label>Тип лечения</label>
-
-    <select name="title">
-
-        {% set current_title = request_data[4] %}
-
-        <option {% if current_title == "Осмотр" %}selected{% endif %}>
-            Осмотр
-        </option>
-
-        <option {% if current_title == "Повторный осмотр" %}selected{% endif %}>
-            Повторный осмотр
-        </option>
-
-        <option {% if current_title == "Профилактика" %}selected{% endif %}>
-            Профилактика
-        </option>
-
-        <option {% if current_title == "Контроль состояния" %}selected{% endif %}>
-            Контроль состояния
-        </option>
-
-        <option {% if current_title == "Лечение" %}selected{% endif %}>
-            Лечение
-        </option>
-
-        <option {% if current_title == "Вакцинация" %}selected{% endif %}>
-            Вакцинация
-        </option>
-
-    </select>
-
-    <br><br>
-
-    <label>Статус</label>
-
-    <select name="status">
-
-        {% set current_status = request_data[5] %}
-
-        <option {% if current_status == "Создана" %}selected{% endif %}>
-            Создана
-        </option>
-
-        <option {% if current_status == "Назначена" %}selected{% endif %}>
-            Назначена
-        </option>
-
-        <option {% if current_status == "Выполняется" %}selected{% endif %}>
-            Выполняется
-        </option>
-
-        <option {% if current_status == "Завершена" %}selected{% endif %}>
-            Завершена
-        </option>
-
-    </select>
-
-    <br><br>
-
-    <button type="submit">
-        Сохранить
-    </button>
-
-</form>
-
-<br>
-
-<a href="/treatment-requests">
-    Назад
-</a>
+{% endblock %}

@@ -27,6 +27,10 @@ from service.director_service import (
     report_animals_condition, report_medical_activity,
     report_finance, report_attendance
 )
+from repositories.cages_repo import get_cage_by_id
+from repositories.species_repo import get_species_by_id
+from service.cages_service import list_cages, create_cage, edit_cage
+from service.species_service import list_species, create_species, edit_species
 
 from database import get_connection
 
@@ -146,15 +150,75 @@ def update_animal_route(animal_id):
 
     return redirect(url_for("animals"))
 
+# ── ВИДЫ ─────────────────────────────────────────────────────
+ 
 @app.route("/species")
 def species():
     data = list_species()
     return render_template("species.html", species=data)
+ 
+ 
+@app.route("/species/add", methods=["POST"])
+def add_species_route():
+    create_species(
+        request.form.get("name"),
+        request.form.get("species_class"),
+        request.form.get("order"),
+        request.form.get("description"),
+    )
+    return redirect("/species")
+ 
+ 
+@app.route("/species/edit/<int:species_id>", methods=["GET", "POST"])
+def edit_species_page(species_id):
+    if request.method == "POST":
+        edit_species(
+            species_id,
+            request.form.get("name"),
+            request.form.get("species_class"),
+            request.form.get("order"),
+            request.form.get("description"),
+        )
+        return redirect("/species")
+ 
+    s = get_species_by_id(species_id)
+    return render_template("edit_species.html", species=s)
 
+# ── ВОЛЬЕРЫ ──────────────────────────────────────────────────
+ 
 @app.route("/cages")
 def cages():
     data = list_cages()
     return render_template("cages.html", cages=data)
+ 
+ 
+@app.route("/cages/add", methods=["POST"])
+def add_cage_route():
+    create_cage(
+        request.form.get("number"),
+        request.form.get("cage_type"),
+        request.form.get("area") or None,
+        request.form.get("climate"),
+        request.form.get("capacity") or None,
+    )
+    return redirect("/cages")
+ 
+ 
+@app.route("/cages/edit/<int:cage_id>", methods=["GET", "POST"])
+def edit_cage_page(cage_id):
+    if request.method == "POST":
+        edit_cage(
+            cage_id,
+            request.form.get("number"),
+            request.form.get("cage_type"),
+            request.form.get("area") or None,
+            request.form.get("climate"),
+            request.form.get("capacity") or None,
+        )
+        return redirect("/cages")
+ 
+    cage = get_cage_by_id(cage_id)
+    return render_template("edit_cage.html", cage=cage)
 
 @app.route("/employees")
 def employees():

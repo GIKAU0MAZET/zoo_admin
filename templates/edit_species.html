@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Редактировать вид: {{ species[1] }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/species/edit/{{ species[0] }}">
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" name="name" class="form-control" required
+                               value="{{ species[1] }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Класс</label>
+                        <input type="text" name="species_class" class="form-control"
+                               value="{{ species[2] or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Отряд</label>
+                        <input type="text" name="order" class="form-control"
+                               value="{{ species[3] or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3">{{ species[4] or '' }}</textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <a href="/species" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -2,24 +2,79 @@
 
 {% block content %}
 
-<h2>Виды животных</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Виды животных</h2>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSpeciesModal">
+        + Добавить вид
+    </button>
+</div>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
             <th>Название</th>
+            <th>Класс</th>
+            <th>Отряд</th>
+            <th>Описание</th>
+            <th>Действия</th>
         </tr>
     </thead>
-
     <tbody>
         {% for s in species %}
         <tr>
             <td>{{ s[0] }}</td>
             <td>{{ s[1] }}</td>
+            <td>{{ s[2] or '—' }}</td>
+            <td>{{ s[3] or '—' }}</td>
+            <td>{{ s[4] or '—' }}</td>
+            <td>
+                <a href="/species/edit/{{ s[0] }}" class="btn btn-sm btn-warning">
+                    Редактировать
+                </a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+{# Модальное окно добавления #}
+<div class="modal fade" id="addSpeciesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Добавить вид</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/species/add">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Класс</label>
+                        <input type="text" name="species_class" class="form-control"
+                               placeholder="Млекопитающие, Птицы...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Отряд</label>
+                        <input type="text" name="order" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

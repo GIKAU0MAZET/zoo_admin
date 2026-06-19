@@ -1,110 +1,68 @@
-<h1>Закупки</h1>
+{% extends 'base.html' %}
 
-<a href="/">Назад</a>
+{% block content %}
 
-<hr>
-
-<h2>Создать закупку</h2>
-
-{% if requests %}
-
-<form action="/purchases/add" method="post">
-
-    <select name="request_id">
-
-        {% for r in requests %}
-
-        <option value="{{ r[0] }}">
-            Заявка №{{ r[0] }}
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-    <button type="submit">
-        Создать закупку
-    </button>
-
-</form>
-
-{% else %}
-
-<p>
-    Нет одобренных заявок для создания закупки.
-</p>
-
-{% endif %}
-
-<hr>
-
-{% if purchases %}
-
-{% for purchase in purchases %}
-
-<div class="purchase-card">
-
-    <h2>
-        Закупка №{{ purchase.id }}
-    </h2>
-
-    <p>
-        Дата: {{ purchase.date }}
-    </p>
-
-    <p>
-        Основание: заявка №{{ purchase.request_id }}
-    </p>
-
-    <table border="1">
-
-        <tr>
-            <th>Поставщик</th>
-            <th>Корм</th>
-            <th>Количество</th>
-            <th>Цена за кг</th>
-            <th>Сумма</th>
-        </tr>
-
-        {% for item in purchase["items"] %}
-        
-        <tr>
-
-            <td>{{ item.supplier }}</td>
-
-            <td>{{ item.food }}</td>
-
-            <td>{{ item.quantity }}</td>
-
-            <td>{{ item.price }}</td>
-
-            <td>{{ item.sum }}</td>
-
-        </tr>
-
-        {% endfor %}
-
-    </table>
-
-    <p>
-
-        <strong>
-            Общая стоимость:
-            {{ purchase.total }}
-        </strong>
-
-    </p>
-
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Закупки</h2>
 </div>
 
-<hr>
+{# Форма создания закупки #}
+<div class="card mb-4" style="max-width: 480px;">
+    <div class="card-header bg-dark text-white">Создать закупку</div>
+    <div class="card-body">
+        {% if requests %}
+        <form action="/purchases/add" method="post" class="d-flex gap-2">
+            <select name="request_id" class="form-select" required>
+                {% for r in requests %}
+                <option value="{{ r[0] }}">Заявка №{{ r[0] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-success">Создать</button>
+        </form>
+        {% else %}
+        <p class="text-muted mb-0">Нет одобренных заявок для создания закупки.</p>
+        {% endif %}
+    </div>
+</div>
 
-{% endfor %}
-
+{# Список закупок #}
+{% if purchases %}
+    {% for purchase in purchases %}
+    <div class="card mb-3">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between">
+            <span>Закупка №{{ purchase.id }}</span>
+            <span>{{ purchase.date }}</span>
+        </div>
+        <div class="card-body">
+            <p class="mb-2 text-muted">Основание: заявка №{{ purchase.request_id }}</p>
+            <table class="table table-sm table-striped mb-2">
+                <thead>
+                    <tr>
+                        <th>Поставщик</th>
+                        <th>Корм</th>
+                        <th>Кол-во</th>
+                        <th>Цена за кг</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in purchase["items"] %}
+                    <tr>
+                        <td>{{ item.supplier }}</td>
+                        <td>{{ item.food }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }} ₽</td>
+                        <td>{{ item.sum }} ₽</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p class="mb-0 fw-bold">Общая стоимость: {{ purchase.total }} ₽</p>
+        </div>
+    </div>
+    {% endfor %}
 {% else %}
-
-<p>
-    Закупок пока нет.
-</p>
-
+<div class="alert alert-info">Закупок пока нет.</div>
 {% endif %}
+
+{% endblock %}

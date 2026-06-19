@@ -2,24 +2,86 @@
 
 {% block content %}
 
-<h2>Вольеры</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Вольеры</h2>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCageModal">
+        + Добавить вольер
+    </button>
+</div>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Название</th>
+            <th>Номер</th>
+            <th>Тип</th>
+            <th>Площадь (м²)</th>
+            <th>Климат</th>
+            <th>Вместимость</th>
+            <th>Действия</th>
         </tr>
     </thead>
-
     <tbody>
         {% for c in cages %}
         <tr>
             <td>{{ c[0] }}</td>
             <td>{{ c[1] }}</td>
+            <td>{{ c[2] or '—' }}</td>
+            <td>{{ c[3] or '—' }}</td>
+            <td>{{ c[4] or '—' }}</td>
+            <td>{{ c[5] or '—' }}</td>
+            <td>
+                <a href="/cages/edit/{{ c[0] }}" class="btn btn-sm btn-warning">
+                    Редактировать
+                </a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+{# Модальное окно добавления #}
+<div class="modal fade" id="addCageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Добавить вольер</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/cages/add">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Номер *</label>
+                        <input type="text" name="number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Тип</label>
+                        <input type="text" name="cage_type" class="form-control"
+                               placeholder="Открытый, закрытый...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Площадь (м²)</label>
+                        <input type="number" step="0.01" name="area" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Климат</label>
+                        <input type="text" name="climate" class="form-control"
+                               placeholder="Тропический, умеренный...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Вместимость</label>
+                        <input type="number" name="capacity" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}
