@@ -28,3 +28,26 @@ body {
     border: none;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-profile {
+    margin-top: auto;
+    padding: 10px;
+    font-size: 0.85rem;
+}
+
+.profile-name {
+    color: #fff;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.profile-role {
+    color: #adb5bd;
+    font-size: 0.78rem;
+    margin-top: 2px;
+}
