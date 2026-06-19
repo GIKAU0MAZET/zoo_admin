@@ -115,7 +115,7 @@ def update_treatment_request(
             "ID ветеринара" = %s,
             Название = %s,
             Статус = %s
-        WHERE id_заявки = %s
+        WHERE "ID заявки" = %s
     """, (
         animal_id,
         veterinarian_id,

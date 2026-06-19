@@ -18,7 +18,7 @@ from service.purchase_requests_service import list_purchase_requests, get_purcha
 from service.purchase_request_items_service import list_request_items, create_request_item, edit_request_item
 from service.tickets_service import list_tickets, create_ticket
 from service.feeding_service import list_feedings, create_feeding
-from service.medical_records_service import list_medical_records, create_medical_record
+from service.medical_records_service import list_treatment_requests_for_vet, list_medical_records_for_vet, create_medical_record, get_request_for_vet
 from service.treatment_requests_service import list_treatment_requests, create_treatment_request, get_treatment_request, edit_treatment_request
 from service.purchases_service import list_purchases, create_purchase
 
@@ -371,15 +371,14 @@ def add_treatment_request_route():
 
     return redirect("/treatment-requests")
 
-@app.route(
-    "/treatment-requests/edit/<int:request_id>"
-)
+@app.route("/treatment-requests/edit/<int:request_id>")
 def edit_treatment_request_page(request_id):
-
     request_data = get_treatment_request(request_id)
 
-    animals = get_animals_for_select()
+    if request_data and request_data[5] == "Завершена":  # ← добавить
+        return redirect("/treatment-requests")
 
+    animals = get_animals_for_select()
     veterinarians = get_all_veterinarians()
 
     return render_template(
@@ -519,7 +518,7 @@ def vet_animals():
     return render_template("vet_animals.html", animals=animals_list)
  
  
-# Ветеринар — медицинские записи
+# Ветеринар — список заявок на лечение + медзаписи
 @app.route("/medical-records")
 def medical_records():
     if "user_id" not in session:
@@ -527,24 +526,54 @@ def medical_records():
     if session.get("role") != "Ветеринар":
         return redirect(url_for("dashboard"))
  
-    data = list_medical_records()
-    animals_list = list_animals()
-    return render_template("medical_records.html", records=data, animals=animals_list)
+    employee_id = session.get("employee_id")
+    treatment_requests = list_treatment_requests_for_vet(employee_id)
+    records = list_medical_records_for_vet(employee_id)
+ 
+    return render_template(
+        "medical_records.html",
+        treatment_requests=treatment_requests,
+        records=records
+    )
  
  
-@app.route("/medical-records/add", methods=["POST"])
-def add_medical_record_route():
+# Ветеринар — форма создания медзаписи по конкретной заявке
+@app.route("/medical-records/add/<int:request_id>")
+def add_medical_record_page(request_id):
     if "user_id" not in session:
         return redirect("/login")
     if session.get("role") != "Ветеринар":
         return redirect(url_for("dashboard"))
  
-    request_id  = request.form.get("request_id") or None
-    animal_id   = request.form.get("animal_id")
     employee_id = session.get("employee_id")
-    name        = request.form.get("name")
-    date        = request.form.get("date")
-    condition   = request.form.get("condition")
+    treatment_request = get_request_for_vet(request_id, employee_id)
+ 
+    if not treatment_request:
+        return redirect("/medical-records")
+ 
+    return render_template(
+        "add_medical_record.html",
+        treatment_request=treatment_request
+    )
+ 
+ 
+@app.route("/medical-records/add/<int:request_id>", methods=["POST"])
+def add_medical_record_route(request_id):
+    if "user_id" not in session:
+        return redirect("/login")
+    if session.get("role") != "Ветеринар":
+        return redirect(url_for("dashboard"))
+ 
+    employee_id = session.get("employee_id")
+    treatment_request = get_request_for_vet(request_id, employee_id)
+ 
+    if not treatment_request:
+        return redirect("/medical-records")
+ 
+    animal_id = treatment_request[2]  # ID животного из заявки
+    name      = request.form.get("name")
+    date      = request.form.get("date")
+    condition = request.form.get("condition")
  
     create_medical_record(request_id, animal_id, employee_id, name, date, condition)
     return redirect("/medical-records")
