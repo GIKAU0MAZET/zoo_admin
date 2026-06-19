@@ -52,7 +52,7 @@ def add_animal(name, birth_date, species_id):
     conn.commit()
     conn.close()
 
-
+#! Удалить
 def delete_animal(animal_id):
     conn = get_connection()
     cur = conn.cursor()
@@ -77,5 +77,24 @@ def update_animal(animal_id, name, birth_date):
     conn.commit()
     conn.close()
     
-    
+def get_animals_for_select():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            ж.животное_id,
+            в.название,
+            ж.кличка
+        FROM животные ж
+        JOIN виды в
+            ON ж.вид_id = в.вид_id
+        ORDER BY ж.кличка
+    """)
+
+    rows = cur.fetchall()
+
+    conn.close()
+
+    return rows
     

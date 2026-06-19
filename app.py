@@ -3,9 +3,10 @@ from datetime import date
 
 from repositories.dashboard_repo import get_dashboard_stats
 from repositories.species_repo import get_all_species
-from repositories.animals_repo import get_animal_by_id
+from repositories.animals_repo import get_animal_by_id, get_animals_for_select
 from repositories.feed_repo import get_all_feed
 from repositories.suppliers_repo import get_all_suppliers
+from repositories.veterinarians_repo import get_all_veterinarians
 
 from service.animals_service import list_animals, create_animal, remove_animal, edit_animal
 from service.species_service import list_species
@@ -17,6 +18,7 @@ from service.purchase_request_items_service import list_request_items, create_re
 from service.tickets_service import list_tickets, create_ticket
 from service.feeding_service import list_feedings, create_feeding
 from service.medical_records_service import list_medical_records, create_medical_record
+from service.treatment_requests_service import list_treatment_requests, create_treatment_request, get_treatment_request, edit_treatment_request
 
 from database import get_connection
 
@@ -322,6 +324,92 @@ def get_feed_by_supplier(supplier_id):
 
     return jsonify(result)
 
+@app.route("/treatment-requests")
+def treatment_requests():
+
+    requests = list_treatment_requests()
+
+    animals = get_animals_for_select()
+
+    veterinarians = get_all_veterinarians()
+
+    return render_template(
+        "treatment_requests.html",
+        requests=requests,
+        animals=animals,
+        veterinarians=veterinarians
+    )
+
+@app.route(
+    "/treatment-requests/add",
+    methods=["POST"]
+)
+def add_treatment_request_route():
+
+    animal_id = request.form.get("animal_id")
+
+    veterinarian_id = request.form.get("veterinarian_id")
+
+    title = request.form.get("title")
+
+    status = request.form.get("status")
+
+    employee_id = session["employee_id"]
+
+    zoo_id = 1
+
+    create_treatment_request(
+        employee_id,
+        animal_id,
+        veterinarian_id,
+        title,
+        status,
+        zoo_id
+    )
+
+    return redirect("/treatment-requests")
+
+@app.route(
+    "/treatment-requests/edit/<int:request_id>"
+)
+def edit_treatment_request_page(request_id):
+
+    request_data = get_treatment_request(request_id)
+
+    animals = get_animals_for_select()
+
+    veterinarians = get_all_veterinarians()
+
+    return render_template(
+        "edit_treatment_request.html",
+        request_data=request_data,
+        animals=animals,
+        veterinarians=veterinarians
+    )
+    
+@app.route(
+    "/treatment-requests/update/<int:request_id>",
+    methods=["POST"]
+)
+def update_treatment_request_route(request_id):
+
+    animal_id = request.form.get("animal_id")
+
+    veterinarian_id = request.form.get("veterinarian_id")
+
+    title = request.form.get("title")
+
+    status = request.form.get("status")
+
+    edit_treatment_request(
+        request_id,
+        animal_id,
+        veterinarian_id,
+        title,
+        status
+    )
+
+    return redirect("/treatment-requests")  
 
 #Кассир
 @app.route("/tickets")
@@ -372,7 +460,6 @@ def feeding():
         return redirect(url_for("dashboard"))
  
     data = list_feedings()
-    print(">>> feedings:", data)
     animals_list = list_animals()
     return render_template("feeding.html", feedings=data, animals=animals_list)
  

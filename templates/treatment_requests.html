@@ -1,0 +1,149 @@
+<h1>Заявки на лечение</h1>
+
+<a href="/">Назад</a>
+
+<h2>Новая заявка</h2>
+
+<form action="/treatment-requests/add" method="post">
+
+    <br><br>
+
+    <label>Животное</label>
+
+    <select name="animal_id">
+
+        {% for animal in animals %}
+
+        <option value="{{ animal[0] }}">
+            {{ animal[1] }} - {{ animal[2] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Ветеринар</label>
+
+    <select name="veterinarian_id">
+
+        {% for vet in veterinarians %}
+
+        <option value="{{ vet[0] }}">
+            {{ vet[1] }}
+            {{ vet[2] }}
+            {{ vet[3] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Тип лечения</label>
+
+    <select name="title" required>
+
+        <option value="Осмотр">
+            Осмотр
+        </option>
+
+        <option value="Повторный осмотр">
+            Повторный осмотр
+        </option>
+
+        <option value="Профилактика">
+            Профилактика
+        </option>
+
+        <option value="Контроль состояния">
+            Контроль состояния
+        </option>
+
+        <option value="Лечение">
+            Лечение
+        </option>
+
+        <option value="Вакцинация">
+            Вакцинация
+        </option>
+
+    </select>
+    
+    <br><br>
+
+    <select name="status">
+
+        <option>Создана</option>
+
+        <option>
+            На рассмотрении
+        </option>
+
+        <option>
+            Одобрена
+        </option>
+
+        <option>
+            Выполняется
+        </option>
+
+        <option>
+            Завершена
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <button type="submit">
+        Создать заявку
+    </button>
+
+</form>
+
+<table border="1">
+
+    <tr>
+        <th>ID</th>
+        <th>Дата</th>
+        <th>Животное</th>
+        <th>Ветеринар</th>
+        <th>Название</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for r in requests %}
+
+    <tr>
+
+        <td>{{ r[0] }}</td>
+
+        <td>{{ r[1] }}</td>
+
+        <td>{{ r[2] }}</td>
+
+        <td>{{ r[3] }}</td>
+
+        <td>{{ r[4] }}</td>
+
+        <td>{{ r[5] }}</td>
+
+        <td>
+
+            <a href="/treatment-requests/edit/{{ r[0] }}">
+                Редактировать
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<hr>

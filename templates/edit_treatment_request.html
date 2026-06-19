@@ -1,0 +1,122 @@
+<h1>
+    Редактирование заявки №{{ request_data[0] }}
+</h1>
+
+<form
+    action="/treatment-requests/update/{{ request_data[0] }}"
+    method="post"
+>
+
+    <label>Животное</label>
+
+    <select name="animal_id">
+
+        {% for animal in animals %}
+
+        <option
+            value="{{ animal[0] }}"
+            {% if animal[0] == request_data[2] %}
+            selected
+            {% endif %}
+        >
+            {{ animal[1] }} — {{ animal[2] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Ветеринар</label>
+
+    <select name="veterinarian_id">
+
+        {% for vet in veterinarians %}
+
+        <option
+            value="{{ vet[0] }}"
+            {% if vet[0] == request_data[3] %}
+            selected
+            {% endif %}
+        >
+            {{ vet[1] }} {{ vet[2] }} {{ vet[3] }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Тип лечения</label>
+
+    <select name="title">
+
+        {% set current_title = request_data[4] %}
+
+        <option {% if current_title == "Осмотр" %}selected{% endif %}>
+            Осмотр
+        </option>
+
+        <option {% if current_title == "Повторный осмотр" %}selected{% endif %}>
+            Повторный осмотр
+        </option>
+
+        <option {% if current_title == "Профилактика" %}selected{% endif %}>
+            Профилактика
+        </option>
+
+        <option {% if current_title == "Контроль состояния" %}selected{% endif %}>
+            Контроль состояния
+        </option>
+
+        <option {% if current_title == "Лечение" %}selected{% endif %}>
+            Лечение
+        </option>
+
+        <option {% if current_title == "Вакцинация" %}selected{% endif %}>
+            Вакцинация
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <label>Статус</label>
+
+    <select name="status">
+
+        {% set current_status = request_data[5] %}
+
+        <option {% if current_status == "Создана" %}selected{% endif %}>
+            Создана
+        </option>
+
+        <option {% if current_status == "Назначена" %}selected{% endif %}>
+            Назначена
+        </option>
+
+        <option {% if current_status == "Выполняется" %}selected{% endif %}>
+            Выполняется
+        </option>
+
+        <option {% if current_status == "Завершена" %}selected{% endif %}>
+            Завершена
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <button type="submit">
+        Сохранить
+    </button>
+
+</form>
+
+<br>
+
+<a href="/treatment-requests">
+    Назад
+</a>
